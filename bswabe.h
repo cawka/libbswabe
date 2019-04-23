@@ -115,6 +115,18 @@ void bswabe_msk_free( bswabe_msk_t* msk );
 void bswabe_prv_free( bswabe_prv_t* prv );
 void bswabe_cph_free( bswabe_cph_t* cph );
 
+bswabe_sgn_t*
+bswabe_sign( bswabe_pub_t* pub, bswabe_prv_t* prv, element_t m, char* policy );
+
+GByteArray*
+bswabe_sgn_serialize( bswabe_sgn_t* sgn );
+
+bswabe_sgn_t*
+bswabe_sgn_unserialize( bswabe_pub_t* pub, GByteArray* m, int free );
+
+void
+bswabe_sgn_free( bswabe_sgn_t* sgn );
+
 /*
   Return a description of the last error that occured. Call this after
   bswabe_enc or bswabe_dec returns 0. The returned string does not
