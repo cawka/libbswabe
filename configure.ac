@@ -2,8 +2,13 @@ dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.61)
 AC_INIT([libbswabe], [0.9], [bethenco@cs.berkeley.edu])
 AC_CONFIG_SRCDIR([bswabe.h])
+AM_INIT_AUTOMAKE([1.10 -Wall no-define foreign])
 
 dnl First, standard system stuff.
+AM_PROG_AR
+AC_PROG_LIBTOOL
+LT_PREREQ([2.2])
+LT_INIT()
 
 dnl  language and compiler support
 AC_MSG_CHECKING(whether to enable debugging)
@@ -11,13 +16,13 @@ debug_default="no"
 AC_ARG_ENABLE(debug, [  --enable-debug=[no/yes]  turn on debugging
                           [default=$debug_default]],, enable_debug=$debug_default)
 if test "x$enable_debug" = "xyes"; then
-  CFLAGS="-g -Wall"
-  LDFLAGS="-g -Wall"
+  CFLAGS+=" -g -Wall"
+  LDFLAGS+=" -g -Wall"
   AC_DEFINE(BSWABE_DEBUG)
   AC_MSG_RESULT(yes)
 else
-  CFLAGS="-O3 -Wall"
-  LDFLAGS="-O3 -Wall"
+  CFLAGS+=" -O3 -Wall"
+  LDFLAGS+=" -O3 -Wall"
   AC_MSG_RESULT(no)
 fi
 AC_PROG_CC
