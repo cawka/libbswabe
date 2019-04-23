@@ -1,0 +1,8 @@
+*.o
+*.lo
+configure
+Makefile
+install-sh
+missing
+mkinstalldirs
+
