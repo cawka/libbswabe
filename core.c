@@ -68,7 +68,7 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_t alpha;
 
 	/* initialize */
- 
+
 	*pub = malloc(sizeof(bswabe_pub_t));
 	*msk = malloc(sizeof(bswabe_msk_t));
 
@@ -136,7 +136,7 @@ bswabe_prv_t* bswabe_keygen( bswabe_pub_t* pub,
 		element_init_G1(c.dp, pub->p);
 		element_init_G2(h_rp, pub->p);
 		element_init_Zr(rp,   pub->p);
-		
+
  		element_from_string(h_rp, c.attr);
  		element_random(rp);
 
@@ -224,13 +224,13 @@ parse_policy_postfix( char* s )
 				raise_error("error parsing \"%s\": stack underflow at \"%s\"\n", s, tok);
 				return 0;
 			}
-			
+
 			/* pop n things and fill in children */
 			node = base_node(k, 0);
 			g_ptr_array_set_size(node->children, n);
 			for( i = n - 1; i >= 0; i-- )
 				node->children->pdata[i] = g_ptr_array_remove_index(stack, stack->len - 1);
-			
+
 			/* push result */
 			g_ptr_array_add(stack, node);
 		}
@@ -429,7 +429,7 @@ int
 cmp_int( const void* a, const void* b )
 {
 	int k, l;
-	
+
 	k = ((bswabe_policy_t*) g_ptr_array_index(cur_comp_pol->children, *((int*)a)))->min_leaves;
 	l = ((bswabe_policy_t*) g_ptr_array_index(cur_comp_pol->children, *((int*)b)))->min_leaves;
 
@@ -734,6 +734,40 @@ dec_flatten( element_t r, bswabe_policy_t* p, bswabe_prv_t* prv, bswabe_pub_t* p
 	dec_node_flatten(r, one, p, prv, pub);
 
 	element_clear(one);
+}
+
+bswabe_sgn_t*
+bswabe_sign( bswabe_pub_t* pub, bswabe_prv_t* prv, element_t m, char* policy )
+{
+    bswabe_sgn_t* sgn;
+    element_t l;
+
+    /* initialize */
+
+    sgn = malloc(sizeof(bswabe_sign));
+
+    element_init_Zr(l, pub->p);
+    element_init_GT(m, pub->p);
+    element_init_GT(l, pub->p);
+
+    element_init_GT(sgn->csa, pub->p);
+    element_init_G1(sgn->b,  pub->p);
+    sgn->p = parse_policy_postfix(policy);
+
+    /* compute */
+
+    element_random(m);
+    element_random(l);
+    element_pow_zn(sgn->csa, pub->g_hat_alpha, l);
+    element_pow_zn(sgn->b, pub->g_hat_alpha, l);
+    element_mul(sgn->csa, sgn->b, m);
+
+    element_pow_zn(sgn->b, pub->h, l);
+
+    fill_policy(sgn->p, pub, l);
+
+    return sgn;
+
 }
 
 int

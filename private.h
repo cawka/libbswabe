@@ -72,3 +72,10 @@ struct bswabe_cph_s
 	element_t c;  /* G_1 */
 	bswabe_policy_t* p;
 };
+
+struct bswabe_sgn_s
+{
+    element_t csa; /* G_T */
+    element_t b;  /* G_1 */
+    bswabe_policy_t* p;
+};

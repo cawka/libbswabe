@@ -289,6 +289,19 @@ bswabe_cph_serialize( bswabe_cph_t* cph )
 	return b;
 }
 
+GByteArray*
+bswabe_sgn_serialize( bswabe_sgn_t* sgn )
+{
+    GByteArray* m;
+
+    m = g_byte_array_new();
+    serialize_element(m, sgn->csa);
+    serialize_element(m, sgn->b);
+    serialize_policy( m, sgn->p);
+
+    return m;
+}
+
 bswabe_cph_t*
 bswabe_cph_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 {
@@ -308,6 +321,27 @@ bswabe_cph_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 		g_byte_array_free(b, 1);
 
 	return cph;
+}
+
+bswabe_sgn_t*
+bswabe_sgn_unserialize( bswabe_pub_t* pub, GByteArray* m, int free )
+{
+    bswabe_sgn_t* sgn;
+    int offset;
+
+    sgn = (bswabe_sgn_t*) malloc(sizeof(bswabe_sgn_t));
+    offset = 0;
+
+    element_init_GT(sgn->csa, pub->p);
+    element_init_G1(sgn->b,  pub->p);
+    unserialize_element(m, &offset, sgn->csa);
+    unserialize_element(m, &offset, sgn->b);
+    sgn->p = unserialize_policy(pub, m, &offset);
+
+    if( free )
+        g_byte_array_free(m, 1);
+
+    return sgn;
 }
 
 void
@@ -334,7 +368,7 @@ void
 bswabe_prv_free( bswabe_prv_t* prv )
 {
 	int i;
-	
+
 	element_clear(prv->d);
 
 	for( i = 0; i < prv->comps->len; i++ )
@@ -378,4 +412,12 @@ bswabe_cph_free( bswabe_cph_t* cph )
 	element_clear(cph->cs);
 	element_clear(cph->c);
 	bswabe_policy_free(cph->p);
+}
+
+void
+bswabe_sgn_free( bswabe_sgn_t* sgn )
+{
+    element_clear(sgn->csa);
+    element_clear(sgn->b);
+    bswabe_policy_free(sgn->p);
 }

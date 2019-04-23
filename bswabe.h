@@ -23,6 +23,11 @@ typedef struct bswabe_msk_s bswabe_msk_t;
 typedef struct bswabe_prv_s bswabe_prv_t;
 
 /*
+  A private key.
+*/
+typedef struct bswabe_sgn_s bswabe_sgn_t;
+
+/*
   A ciphertext. Note that this library only handles encrypting a
   single group element, so if you want to encrypt something bigger,
   you will have to use that group element as a symmetric key for
